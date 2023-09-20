@@ -24,8 +24,8 @@ static net_recv_msg_fn net_recv_msg;
 static void* lib_handle;
 
 #if defined(_WIN32)
-#define dlsym GetProcAddress
-#define dlclose FreeLibrary
+#   define dlsym GetProcAddress
+#   define dlclose FreeLibrary
 #endif
 
 static void close_shared_lib(void)
@@ -90,4 +90,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
