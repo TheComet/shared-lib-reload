@@ -1,6 +1,11 @@
 #include "shared.h"
 
-#include <dlfcn.h>
+#if defined(_WIN32)
+#   define WIN32_LEAN_AND_MEAN
+#   include <Windows.h>
+#else
+#   include <dlfcn.h>
+#endif
 
 #include <stdio.h>
 
@@ -18,6 +23,11 @@ static net_recv_msg_fn net_recv_msg;
 
 static void* lib_handle;
 
+#if defined(_WIN32)
+#define dlsym GetProcAddress
+#define dlclose FreeLibrary
+#endif
+
 static void close_shared_lib(void)
 {
     if (lib_handle)
@@ -28,7 +38,11 @@ static void reload_shared_lib(void)
 {
     close_shared_lib();
 
+#if defined(_WIN32)
+    lib_handle = LoadLibrary("Debug\\shared.dll");
+#else
     lib_handle = dlopen("./shared.so", RTLD_LAZY);
+#endif
     *(void**)&create_some_obj  = dlsym(lib_handle, "create_some_obj");
     *(void**)&destroy_some_obj = dlsym(lib_handle, "destroy_some_obj");
     *(void**)&net_init         = dlsym(lib_handle, "net_init");
@@ -73,7 +87,6 @@ int main(int argc, char** argv)
     destroy_some_obj(o);
 
     net_deinit();
-    close_shared_lib();
 
     return 0;
 }

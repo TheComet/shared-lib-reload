@@ -16,6 +16,10 @@ set_target_properties (shared PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
     PREFIX "")
 
+if (WIN32)
+    target_link_libraries (shared PRIVATE ws2_32)
+endif ()
+
 add_executable (app
     "app/main.c")
 target_include_directories (app
@@ -23,4 +27,3 @@ target_include_directories (app
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/shared>)
 set_target_properties (app PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-

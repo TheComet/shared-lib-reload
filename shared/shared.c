@@ -1,8 +1,15 @@
 #include "shared.h"
 
-#include <unistd.h>
-#include <netdb.h>
-#include <sys/socket.h>
+#if defined(_WIN32)
+#   include <WinSock2.h>
+#   include <ws2ipdef.h>
+#   include <ws2tcpip.h>
+#   define close closesocket
+#else
+#   include <unistd.h>
+#   include <netdb.h>
+#   include <sys/socket.h>
+#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -28,11 +35,14 @@ void destroy_some_obj(struct some_obj* o)
 void net_init(void)
 {
 #if defined(_WIN32)
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
 }
 void net_deinit(void)
 {
 #if defined(_WIN32)
+    WSACleanup();
 #endif
 }
 int net_host(const char* bind_address, const char* port)
@@ -124,4 +134,3 @@ void net_recv_msg(int sockfd)
         printf("Received: %s\n", buf);
     }
 }
-
